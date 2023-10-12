@@ -1,19 +1,32 @@
-{% extends "base.html" %}
-{% block title%} {{ title }} {% endblock %}
-{% block content%}
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container py-4 text-center">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/index.css">
+</head>
+
+<body>
+    {% extends "base.html" %}
+    {% block title%} {{ title }} {% endblock %}
+    {% block content%}
+    <div class="container py-4 text-center">
 
 
-    {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated %}
 
-    <h1>반갑습니다 {{ current_user.username }}님</h1>
-    <a href="{{url_for('logout')}}">로그아웃</a>
+        <h1>반갑습니다 {{ current_user.username }}님</h1>
+        <a href="{{url_for('logout')}}">로그아웃</a>
 
-    {% else %}
+        {% else %}
 
-    <a href="{{url_for('login')}}">여기를 누르면 배고픈 식탁 페이지로 이동합니다.</a>
-    
-    {% endif %}
-</div>
-{% endblock %}
+        <a href="{{url_for('login')}}"><img class="hungryImg" src="../static/images/hungry.png" alt="startLogo"/></a>
+
+        {% endif %}
+    </div>
+    {% endblock %}
+</body>
+
+</html>

@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/auth.css">
+</head>
+
+<body>
+
 {% extends "base.html" %}
 {% block title%} {{ title }} {% endblock %}
 {% block content%}
@@ -20,8 +32,8 @@
                 {% endwith %}
 
                 <div class="text-center">
-                    <h2>배고픈 식탁 입니다!</h2>
-                    <h5 class="text-primary">{{ text }}</h5>
+                    <h2><img class="hungryImg" src="../static/images/hungry.png" alt="loginLogo"/></h2>
+                    <h5 class="text-primary" id="text-primary-custom">{{ text }}</h5>
                 </div>
                 
                 {% if request.path == '/register/' %}
@@ -65,16 +77,16 @@
                 <div class="text-center">
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-block btn-primary mb-3"> {{ btn_action }} </button>
+                        <button type="submit" class="btn btn-block btn-primary mb-3" id="btn-primary-custom"> {{ btn_action }} </button>
                     </div>
 
                     <p>
                         {% if request.path != '/register/' %}
-                        새로오셨나요?
-                        <a href="{{url_for('register')}}">배고픈 식탁 계정 만들기</a>
+                        처음 오신다면?
+                        <a href="{{url_for('register')}}" class="joinClick"> 회원 가입 하기</a>
                         {% else %}
-                        벌써 계정이 있으세요?
-                        <a href="{{url_for('login')}}">로그인</a>
+                        가입되어 있으시다면?
+                        <a href="{{url_for('login')}}" class="joinClick">로그인</a>
                         {% endif %}
                     </p>
                     
@@ -84,3 +96,8 @@
     </div>
 </div>
 {% endblock %}
+
+
+</body>
+
+</html>
