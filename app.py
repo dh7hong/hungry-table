@@ -56,11 +56,11 @@ def create_app():
     =================================================== '''
 
 # from app import db
-from flask_login import UserMixin
-
 class User(UserMixin, db.Model):
     __tablename__ = "user"
     
+    __table_args__ = {'extend_existing': True}
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -73,21 +73,28 @@ class User(UserMixin, db.Model):
     manage.py
     =================================================== '''
 
-# def deploy():
-# 	"""Run deployment tasks."""
-# 	from flask_migrate import upgrade,migrate,init,stamp
+def deploy():
+	"""Run deployment tasks."""
+	# from app import create_app,db
+	from flask_migrate import upgrade,migrate,init,stamp
 
-# 	app = create_app()
-# 	app.app_context().push()
-# 	db.create_all()
+	app = create_app()
+	app.app_context().push()
+	db.create_all()
 
-# 	# migrate database to latest revision
-# 	init()
-# 	stamp()
-# 	migrate()
-# 	upgrade()
-	
-# deploy()
+	# migrate database to latest revision
+	init()
+	stamp()
+	migrate()
+	upgrade()
+
+import os
+
+directory_name = "migrations"
+if os.path.exists(directory_name):
+	pass
+else:
+	deploy()
 
 ''' ===================================================
     forms.py
@@ -221,7 +228,7 @@ def login():
 
     return render_template("auth.html",
         form=form,
-        text="Login",
+        text="로그인",
         title="Login",
         btn_action="Login"
         )
@@ -281,9 +288,9 @@ def register():
             
     return render_template("auth.html",
         form=form,
-        text="Create account",
-        title="Register",
-        btn_action="Register account"
+        text="계정 만들기",
+        title="회원가입",
+        btn_action="가입하기"
         )
 
 @app.route("/logout")

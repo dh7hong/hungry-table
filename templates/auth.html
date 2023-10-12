@@ -70,10 +70,10 @@
 
                     <p>
                         {% if request.path != '/register/' %}
-                        New here?
+                        새로오셨나요?
                         <a href="{{url_for('register')}}">배고픈 식탁 계정 만들기</a>
                         {% else %}
-                        Already have an account?
+                        벌써 계정이 있으세요?
                         <a href="{{url_for('login')}}">로그인</a>
                         {% endif %}
                     </p>
