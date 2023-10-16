@@ -8,11 +8,11 @@
     for session management
     =================================================== '''
 
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
-
+import os
 from flask_login import (
     UserMixin,
     login_user,
@@ -21,6 +21,8 @@ from flask_login import (
     logout_user,
     login_required,
 )
+
+
 
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
@@ -55,6 +57,31 @@ def create_app():
     models.py
     =================================================== '''
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] =\
+        'sqlite:///' + os.path.join(basedir, 'database.db')
+
+db = SQLAlchemy(app)
+
+
+class Dish1(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    ingredient = db.Column(db.String(100), nullable=False)
+    content1 = db.Column(db.String(100), nullable=False)
+    content2 = db.Column(db.String(100), nullable=False)
+    content3 = db.Column(db.String(100), nullable=False)
+    content4 = db.Column(db.String(100), nullable=False)
+    content5 = db.Column(db.String(100), nullable=False)
+    image_url = db.Column(db.String(10000), nullable=False)
+
+    def __repr__(self):
+        return f'{self.username} {self.ingredient} 추천 by {self.username}'
+
+
+db.create_all()
+
 # from app import db
 class User(UserMixin, db.Model):
     __tablename__ = "user"
@@ -68,7 +95,16 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
-    
+'''====================================================
+other things
+
+========================================================'''
+
+
+
+
+
+
 ''' ===================================================
     manage.py
     =================================================== '''
@@ -155,6 +191,9 @@ class register_form(FlaskForm):
         if User.query.filter_by(username=uname.data).first():
             raise ValidationError("유저 이름은 벌써쓰이고 있습니다")
         
+
+
+    
 ''' ===================================================
     main.py
     =================================================== '''
@@ -195,6 +234,7 @@ from app import create_app,db,login_manager,bcrypt
 # from forms import login_form,register_form
 
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -210,7 +250,6 @@ def session_handler():
 def index():
     return render_template("index.html",title="Home")
 
-
 @app.route("/login/", methods=("GET", "POST"), strict_slashes=False)
 def login():
     form = login_form()
@@ -220,7 +259,7 @@ def login():
             user = User.query.filter_by(email=form.email.data).first()
             if check_password_hash(user.pwd, form.pwd.data):
                 login_user(user)
-                return redirect(url_for('index'))
+                return redirect(url_for('main'))
             else:
                 flash("틀린 유저이름이나 비밀번호를 입력하셨습니다!", "danger")
         except Exception as e:
@@ -232,6 +271,7 @@ def login():
         title="Login",
         btn_action="Login"
         )
+
 
 
 
@@ -298,6 +338,50 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+
+@app.route('/main', methods=("GET", "POST"), strict_slashes=False)
+
+def main():
+    recipe_list = Dish1.query.all()
+    return render_template('main.html', data=recipe_list)
+
+@app.route('/detail/<username>')
+def detail(username):
+    dish = Dish1.query.filter_by(username=username).all()
+    return render_template('detail.html', data=dish)
+
+
+@app.route('/main/delete/<int:id>')
+def recipe_delete(id):
+    
+    recipe_to_delete = Dish1.query.get_or_404(id)
+
+    try:
+        db.session.delete(recipe_to_delete)
+        db.session.commit()
+        return redirect('/main/')
+    except:
+        return "There was a problem deleting that song"
+
+@app.route('/main/create/')
+def recipe_create():
+    # form으로 데이터 입력 받기
+    username_receive = request.args.get("username")
+    ingredient_receive = request.args.get("ingredient")
+    content_receive1 = request.args.get("content1")
+    content_receive2 = request.args.get("content2")
+    content_receive3 = request.args.get("content3")
+    content_receive4 = request.args.get("content4")
+    content_receive5 = request.args.get("content5")
+    image_receive = request.args.get("image_url")
+
+    # 데이터를 DB에 저장하기
+    dish = Dish1(username=username_receive, ingredient=ingredient_receive, content1=content_receive1, content2=content_receive2,content3=content_receive3,content4=content_receive4, content5=content_receive5,image_url=image_receive)
+    db.session.add(dish)
+    db.session.commit()
+    return redirect(url_for('recipe', username=username_receive))
 
 
 if __name__ == "__main__":
